@@ -8,21 +8,33 @@ import pandas as pd
 import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-get_ipython().magic(u'matplotlib inline')
+# get_ipython().magic(u'matplotlib inline')
 import seaborn as sns
 import numpy as np
 
-def import_data(*args):
+
+def import_data(csv_file, sync_pulses_file, faces_file):
 	# Import data from separate files
-	# Only use *args when you don't know how many arguments it's going to take
 	
-	file1, file2, file3 = args
-	df = pd.read_csv(file1) # run#.csv file
-	tobii_sync = json.load(open(file2)) # Runs sync pulses
-	tobii_sync = {int(k)/1000000.: v for k, v in tobii_sync.iteritems()}
-	task_data = json.load(open(file3)) #long json file
+	df = load_tobii_data(csv_file)
+	tobii_sync = load_sync_pulses_data(sync_pulses_file)
+	task_data = load_task_data(faces_file) #long json file
 	
 	return df, tobii_sync, task_data
+
+def load_tobii_data(csv_file):
+	df = pd.read_csv(csv_file) # run#.csv file
+	return df
+
+def load_sync_pulses_data(sync_pulses_file):
+	tobii_sync = json.load(open(sync_pulses_file)) # Run's sync pulses
+	tobii_sync = {int(k)/1000000.: v for k, v in tobii_sync.iteritems()}
+	return tobii_sync
+
+def load_task_data(faces_file):
+	task_data = json.load(open(faces_file)) #long json file
+	return task_data
+
 	
 def fix_tables(df, tobii_sync, task_data):
 	tobii_pulses = []
