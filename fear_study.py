@@ -63,9 +63,9 @@ def fix_tables(df, tobii_sync, task_data):
 	# Calculate Pupil average between two eyes
 	df['pupil_average'] = (df.l_pup_diam + df.r_pup_diam)/2.
 
-	return df, task_data, tobii_sync
+	return df
 
-def split_target(df, task_data, tobii_sync):
+def split_target(df, task_data):
 	# Split trials between fear and non fear trials
 	
 	fear_trials = []
@@ -102,6 +102,7 @@ def split_target(df, task_data, tobii_sync):
 		del fear_trials[val]
 
 	to_delete = []
+	
 	for i in range(len(notfear_trials)):
 		array = notfear_trials[i]
 		if len(array) > minval:
