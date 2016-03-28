@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 # get_ipython().magic(u'matplotlib inline')
 import seaborn as sns
 import numpy as np
+import os
 
 
 def import_data(csv_file, sync_pulses_file, faces_file):
@@ -136,17 +137,19 @@ def baseline_norm_div(trials):
     return trials_norm
     
         
-def plot_comparisons(fear_trials, notfear_trials):
+def plot_comparisons(fear_trials, notfear_trials, norm_method):
 	# Plot graphs
 	
 	fig1  = plt.figure()
 	ax = plt.axes()
 	
+	#Fear_trials versus notfear_trials
 	plt.plot(np.nanmean(fear_trials, axis=0), label="Fear")
 	plt.plot(np.nanmean(notfear_trials, axis=0), label="Other")
 	leg = ax.legend()
-	plt.title("Pupillary Response for Faces")
+	plt.title("Pupillary Response for Faces" + " -" + str(norm_method) + " normalization")
 	
+	#Individual Trials Separately- fear and notfear
 	fig2 = plt.figure()
 	ax1 = fig2.add_axes([0, 0, 0.5, 0.5])
 	ax2 = fig2.add_axes([0.5, 0, 0.5, 0.5])
@@ -162,6 +165,31 @@ def plot_comparisons(fear_trials, notfear_trials):
 	for i in range(len(notfear_trials)):
 		ax2.plot(notfear_trials[i], color='red')    
 
+def plot_trial(dirname, subject, trial_number, norm_method):
+    subj = subject + "/faces"
+    numb = str(trial_number)
+    
+    a = "run" + numb + ".csv"
+    b = "run" + numb + "_sync_pulses.json"
+    c = "faces_run" + numb + ".json"
+    
+    df, tobii_sync, task_data = import_data(os.path.join(dirname, subj, a),
+    										os.path.join(dirname, subj, b),
+      										os.path.join(dirname, subj, c))
+    df_modified = fix_tables(df, tobii_sync, task_data)
+    fear_trials, notfear_trials = split_target(df, task_data)
+    
+    if norm_method == "sub":
+    	trials_norm_fear = baseline_norm_sub(fear_trials)
+    	trials_norm_notfear = baseline_norm_sub(notfear_trials)
+    if norm_method == "div":
+    	trials_norm_fear = baseline_norm_div(fear_trials)
+    	trials_norm_notfear = baseline_norm_div(notfear_trials)
+    
+    plot_comparisons(trials_norm_fear, trials_norm_notfear, norm_method)
+
+
+# Original functions- since modified for readability and generalizability to plot_trial
 def run_all(*args):
 	# Run all the functions in this file to produce graphs with data modified
 	
