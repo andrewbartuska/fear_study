@@ -1,7 +1,6 @@
 from fear_study import *
 from nose.tools import *
 
-# Questions for John- Using outputs from other functions in tests
 
 def test_import_data():
 	df, tobii_sync, task_data = import_data("test/test_data/tobii_test.csv", \
@@ -53,13 +52,47 @@ def test_split_target():
 	
 	assert_equal(all(len(x) == len(fear_trials[0]) for x in fear_trials), True)
 	assert_equal(all(len(x) == len(notfear_trials[0]) for x in notfear_trials), True)
+
 	
 def test_baseline_norm_sub():
-	pass
+	df, tobii_sync, task_data = import_data("test/test_data/tobii_test.csv", \
+						 	"test/test_data/test_sync_pulse_real.json", \
+							"test/test_data/test_faces_run.json")	
+	df = fix_tables(df, tobii_sync, task_data)
+	fear_trials, notfear_trials = split_target(df, task_data)
+	fear_trials_norm = baseline_norm_sub(fear_trials)
+	notfear_trials_norm = baseline_norm_sub(notfear_trials)
+	
+	assert_equal(type(fear_trials_norm), type(notfear_trials_norm), np.ndarray)
+	
+	assert_equal(all(len(x) == len(fear_trials[0]) for x in fear_trials), True)
+	assert_equal(all(len(x) == len(notfear_trials[0]) for x in notfear_trials), True)	
+	
+	assert_equal(len(fear_trials_norm[0]), len(notfear_trials_norm[0]))
+	assert_equal(len(fear_trials_norm[0]), len(notfear_trials_norm[0]), not 0)
 
 def test_baseline_norm_div():
-	pass
+	df, tobii_sync, task_data = import_data("test/test_data/tobii_test.csv", \
+						 	"test/test_data/test_sync_pulse_real.json", \
+							"test/test_data/test_faces_run.json")	
+	df = fix_tables(df, tobii_sync, task_data)
+	fear_trials, notfear_trials = split_target(df, task_data)
+	fear_trials_norm = baseline_norm_div(fear_trials)
+	notfear_trials_norm = baseline_norm_div(notfear_trials)
+	
+	assert_equal(type(fear_trials_norm), type(notfear_trials_norm), np.ndarray)
+	
+	assert_equal(all(len(x) == len(fear_trials[0]) for x in fear_trials), True)
+	assert_equal(all(len(x) == len(notfear_trials[0]) for x in notfear_trials), True)	
+	
+	assert_equal(len(fear_trials_norm[0]), len(notfear_trials_norm[0]))
+	assert_equal(len(fear_trials_norm[0]), len(notfear_trials_norm[0]), not 0)
 
+# Both of these functions should pass tests since their inputs are tested in previous tests
+# Should pass as long as fear_trials, notfear_trials are arrays of equal length
 def test_plot_comparisons():
 	pass
 
+# Should pass as long as file exists and has correct naming convention == weakness in generalizability
+def test_plot_trial():
+	pass

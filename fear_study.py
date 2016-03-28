@@ -129,8 +129,8 @@ def baseline_norm_sub(trials):
     return trials_norm
 
 def baseline_norm_div(trials):
-    #Take mean of first 15 columns and subtract that from all of the rows
-    trials_norm = trials / np.tile(trials[:, :15].mean(axis=1).reshape(
+    #Take mean of first 50 columns and divide that from all of the rows
+    trials_norm = trials / np.tile(trials[:, :50].mean(axis=1).reshape(
                 (trials.shape[0], 1)), trials.shape[1])
     
     # trials[0:15].mean(axis=0, keepdims=True) - trials
@@ -166,16 +166,18 @@ def plot_comparisons(fear_trials, notfear_trials, norm_method):
 		ax2.plot(notfear_trials[i], color='red')    
 
 def plot_trial(dirname, subject, trial_number, norm_method):
-    subj = subject + "/faces"
+    subj = str(subject) + "/faces"
     numb = str(trial_number)
+    dir = str(dirname)
+    norm_method = str(norm_method)
     
     a = "run" + numb + ".csv"
     b = "run" + numb + "_sync_pulses.json"
     c = "faces_run" + numb + ".json"
     
-    df, tobii_sync, task_data = import_data(os.path.join(dirname, subj, a),
-    										os.path.join(dirname, subj, b),
-      										os.path.join(dirname, subj, c))
+    df, tobii_sync, task_data = import_data(os.path.join(dir, subj, a),
+    										os.path.join(dir, subj, b),
+      										os.path.join(dir, subj, c))
     df_modified = fix_tables(df, tobii_sync, task_data)
     fear_trials, notfear_trials = split_target(df, task_data)
     
